@@ -36,19 +36,13 @@ UNECE_deadwood_EU27 = UNECE_deadwood_EU27[['ENG_NAME', 'Forest - 2015 (m?/ha)_To
 
 #rename column - Forest - 2015 (m?/ha)_Total
 UNECE_deadwood_EU27 = UNECE_deadwood_EU27.rename(columns={'Forest - 2015 (m?/ha)_Total': 'Deadwood', 'ENG_NAME':'Country'})
-#CHECK EVERY TIME AFTER CHANGING ENTRY DATA: drop countries where in both datasets are NA
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "Croatia"]
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "Cyprus"]
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "France"]
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "Greece"]
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "Luxembourg"]
-UNECE_deadwood_EU27 = UNECE_deadwood_EU27.loc[UNECE_deadwood_EU27["Country"] != "Malta"]
+
 print(UNECE_deadwood_EU27.to_string())
 #create UNECE lists for the charts
-Country = list(UNECE_deadwood_EU27["Country"])
-UNECE_deadwood = list(UNECE_deadwood_EU27["Deadwood"])
-print(Country)
-print(UNECE_deadwood)
+# Country = list(UNECE_deadwood_EU27["Country"])
+# UNECE_deadwood = list(UNECE_deadwood_EU27["Deadwood"])
+# print(Country)
+# print(UNECE_deadwood)
 
 ##DEADWOOD DATA FOR REF. SITES
 REFSITES_deadwood = pandas.read_csv('literature_review_deadwood_organized.csv')
@@ -60,26 +54,44 @@ REFSITES_deadwood = REFSITES_deadwood.astype({'Deadwood':'float64'})
 REFSITES_min_max_avg= (REFSITES_deadwood.groupby(['Country','Bioregion'])['Deadwood']
          .agg(['mean','min','max'])
          .reset_index())
-print(REFSITES_min_max_avg)
+#print(REFSITES_min_max_avg)
 
-#create REFSITES lists for the charts
-Country_errorbar = list(REFSITES_min_max_avg["Country"])
-deadwood_errorbar_mean = list(REFSITES_min_max_avg["mean"])
-deadwood_errorbar_min = list(REFSITES_min_max_avg["min"])
-deadwood_errorbar_max = list(REFSITES_min_max_avg["max"])
-list_1_to_23 = range(1, 23)
-print(Country_errorbar)
-print(deadwood_errorbar_mean)
+table = pandas.merge(UNECE_deadwood_EU27, REFSITES_min_max_avg, how='outer', on="Country")
+#print(table)
+#CHECK EVERY TIME AFTER CHANGING ENTRY DATA: drop countries where in both datasets are NA
+table = table.loc[table["Country"] != "Croatia"]
+table = table.loc[table["Country"] != "Cyprus"]
+table = table.loc[table["Country"] != "France"]
+table = table.loc[table["Country"] != "Greece"]
+table = table.loc[table["Country"] != "Luxembourg"]
+table = table.loc[table["Country"] != "Malta"]
+table = table.reset_index()
+table = table.drop(['index'], axis=1)
+table = table.fillna(0)
+print(table)
 
-#CHART
-fig, ax = plt.subplots()
-ax.bar(x=list_1_to_23, height = UNECE_deadwood, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
-error = [deadwood_errorbar_min, deadwood_errorbar_max]
-ax.errorbar(x=list_1_to_23, y=deadwood_errorbar_mean, tick_label=Country_errorbar, yerr=error, fmt='o', linewidth=1, capsize=3)
-
-plt.xticks(fontsize=8, rotation=90)
-fig.suptitle('Deadwood amount EU27', fontsize=20)
-plt.xlabel('Country', fontsize=5)
-plt.ylabel('Deadwood m3/ha', fontsize=16)
-
-plt.show()
+# #create REFSITES lists for the charts
+#Country_errorbar = list(REFSITES_min_max_avg["Country"])
+deadwood_errorbar_mean = list(table["mean"])
+deadwood_errorbar_min = list(table["min"])
+deadwood_errorbar_max = list(table["max"])
+errorbar_list_1_to_21 = range(1, 25)
+barlist_1_to_21 = range(1, 21)
+deadwood_bar_list = list(table["Deadwood"])??? - how to delete values that occur more times
+#
+# print(Country_errorbar)
+# print(deadwood_errorbar_mean)
+# print
+#
+# #CHART
+# fig, ax = plt.subplots()
+# ax.bar(x=list_1_to_27, height = UNECE_deadwood, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
+# error = [deadwood_errorbar_min, deadwood_errorbar_max]
+# ax.errorbar(x=list_1_to_19, y=deadwood_errorbar_mean, tick_label=Country_errorbar, yerr=error, fmt='o', linewidth=1, capsize=3)
+#
+# plt.xticks(fontsize=8, rotation=90)
+# fig.suptitle('Deadwood amount EU27', fontsize=20)
+# plt.xlabel('Country', fontsize=5)
+# plt.ylabel('Deadwood m3/ha', fontsize=16)
+#
+# plt.show()
