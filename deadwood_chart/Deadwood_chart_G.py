@@ -70,28 +70,50 @@ table = table.drop(['index'], axis=1)
 table = table.fillna(0)
 print(table)
 
-# #create REFSITES lists for the charts
-#Country_errorbar = list(REFSITES_min_max_avg["Country"])
+# #create lists for the charts
+Country = list(table["Country"])
+Country = list(dict.fromkeys(Country)) #removes duplicates, keeps only one from several same values
+Country = list(map(lambda x: x.replace('Czech Republic', 'Czech Rep.'), Country)) #replace: shortening czech rep.
+Country = list(map(lambda x: x.replace('Netherlands', 'Netherl.'), Country)) #replace: shortening czech rep.
 deadwood_errorbar_mean = list(table["mean"])
 deadwood_errorbar_min = list(table["min"])
+deadwood_errorbar_min  = list(filter(lambda num: num != 0, deadwood_errorbar_min))
 deadwood_errorbar_max = list(table["max"])
-errorbar_list_1_to_21 = range(1, 25)
-barlist_1_to_21 = range(1, 21)
-deadwood_bar_list = list(table["Deadwood"])??? - how to delete values that occur more times
-#
-# print(Country_errorbar)
-# print(deadwood_errorbar_mean)
-# print
-#
-# #CHART
-# fig, ax = plt.subplots()
-# ax.bar(x=list_1_to_27, height = UNECE_deadwood, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
-# error = [deadwood_errorbar_min, deadwood_errorbar_max]
-# ax.errorbar(x=list_1_to_19, y=deadwood_errorbar_mean, tick_label=Country_errorbar, yerr=error, fmt='o', linewidth=1, capsize=3)
-#
-# plt.xticks(fontsize=8, rotation=90)
-# fig.suptitle('Deadwood amount EU27', fontsize=20)
-# plt.xlabel('Country', fontsize=5)
-# plt.ylabel('Deadwood m3/ha', fontsize=16)
-#
-# plt.show()
+deadwood_errorbar_max  = list(filter(lambda num: num != 0, deadwood_errorbar_max))
+errorbar_list_1_to_25 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10.8, 11, 11.2, 12, 13, 14, 15, 16, 16.9, 17.1, 18, 19, 20, 21, 22]
+barlist_1_to_22 = list(range(1, 23))
+deadwood_bar_list = list(table["Deadwood"])
+print(deadwood_bar_list)
+#CHECK EVERY TIME AFTER CHANGING ENTRY DATA: deadwood bar list change manualy deleting the duplicates (except 0)
+deadwood_bar_list = [21.8, 11.45, 0.0, 0.0, 4.92, 14.77, 6.0, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43, 0.0]
+#CHECK EVERY TIME AFTER CHANGING ENTRY DATA: error bar mean list (y) and error bar numbers list(x)  change manualy deleting mean 0 and corresponding number at X numbers list
+deadwood_errorbar_mean=[60.714285714285715, 77.0, 28.825000000000003, 159.9, 181.0, 120.97999999999999, 102.66666666666667, 47.25, 65.3, 111.7, 92.0, 32.6, 155.0, 158.0, 135.0, 175.95454545454547, 205.66666666666666, 4.4, 60.675000000000004]
+errorbar_list_1_to_25 = [1, 2, 3, 4, 5, 6,  9, 10.8, 11, 11.2, 12, 13, 15, 16.9, 17.1, 18, 19, 21, 22]
+#checking the list and the correct number of values in the lists
+print(deadwood_bar_list)
+print(len(deadwood_bar_list))
+
+print(barlist_1_to_22)
+print(len(barlist_1_to_22))
+
+print(deadwood_errorbar_mean)
+print(len(deadwood_errorbar_mean))
+
+print(errorbar_list_1_to_25)
+print(len(errorbar_list_1_to_25))
+
+print(Country)
+print(len(Country))
+ #CHART
+fig, ax = plt.subplots()
+ax.bar(x=barlist_1_to_22, height = deadwood_bar_list, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
+error = [deadwood_errorbar_min, deadwood_errorbar_max]
+ax.errorbar(x=errorbar_list_1_to_25, y=deadwood_errorbar_mean, yerr=error, fmt='d', linewidth=1, capsize=3)
+#plt.text(1,deadwood_errorbar_mean[1],"Text Label",va='top',fontsize=3,rotation=90)
+
+plt.xticks(fontsize=8, rotation=60)
+fig.suptitle('Deadwood amount EU27', fontsize=10, weight = 'bold')
+plt.xlabel('Country', fontsize=5)
+plt.ylabel('Deadwood m3/ha', fontsize=10, weight = 'bold')
+
+plt.show()
