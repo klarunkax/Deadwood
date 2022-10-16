@@ -45,7 +45,7 @@ print(UNECE_deadwood_EU27.to_string())
 # print(UNECE_deadwood)
 
 ##DEADWOOD DATA FOR REF. SITES
-REFSITES_deadwood = pandas.read_csv('literature_review_deadwood_organized.csv')
+REFSITES_deadwood = pandas.read_csv('literature_review_deadwood_organized_V2.csv')
 REFSITES_deadwood = pandas.DataFrame(REFSITES_deadwood)
 REFSITES_deadwood = REFSITES_deadwood[['Bioregion', 'Country', 'Deadwood']]
 REFSITES_deadwood = REFSITES_deadwood.dropna()
@@ -61,54 +61,68 @@ table = pandas.merge(UNECE_deadwood_EU27, REFSITES_min_max_avg, how='outer', on=
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: drop countries where in both datasets are NA
 table = table.loc[table["Country"] != "Croatia"]
 table = table.loc[table["Country"] != "Cyprus"]
-table = table.loc[table["Country"] != "France"]
+# table = table.loc[table["Country"] != "France"]
 table = table.loc[table["Country"] != "Greece"]
 table = table.loc[table["Country"] != "Luxembourg"]
 table = table.loc[table["Country"] != "Malta"]
 table = table.reset_index()
 table = table.drop(['index'], axis=1)
 table = table.fillna(0)
+table['number'] = range(1, 1+len(table))
 print(table)
+table.to_csv('C:/Users/Klara/Documents/Prace/JRC/Teleworking/2022/forest_condition/deadwood/chart/table.csv')
 
 # #create lists for the charts
 Country = list(table["Country"])
 Country = list(dict.fromkeys(Country)) #removes duplicates, keeps only one from several same values
 Country = list(map(lambda x: x.replace('Czech Republic', 'Czech Rep.'), Country)) #replace: shortening czech rep.
 Country = list(map(lambda x: x.replace('Netherlands', 'Netherl.'), Country)) #replace: shortening czech rep.
-deadwood_errorbar_mean = list(table["mean"])
-deadwood_errorbar_min = list(table["min"])
-deadwood_errorbar_min  = list(filter(lambda num: num != 0, deadwood_errorbar_min))
-deadwood_errorbar_max = list(table["max"])
-deadwood_errorbar_max  = list(filter(lambda num: num != 0, deadwood_errorbar_max))
-errorbar_list_1_to_25 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10.8, 11, 11.2, 12, 13, 14, 15, 16, 16.9, 17.1, 18, 19, 20, 21, 22]
-barlist_1_to_22 = list(range(1, 23))
-deadwood_bar_list = list(table["Deadwood"])
-print(deadwood_bar_list)
+y_error = list(table["mean"])
+y_error  = list(filter(lambda num: num != 0, y_error)) #correct
+yerr_min = list(table["min"])
+yerr_min  = list(filter(lambda num: num != 0, yerr_min)) #correct
+yerr_max = list(table["max"])
+yerr_max  = list(filter(lambda num: num != 0, yerr_max)) #correct
+x_bar= list(range(1, 23)) #correct
+y_bar = list(table["Deadwood"])
+print(y_bar)
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: deadwood bar list change manualy deleting the duplicates (except 0)
-deadwood_bar_list = [21.8, 11.45, 0.0, 0.0, 4.92, 14.77, 6.0, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43, 0.0]
+y_bar = [21.8, 11.45, 0.0, 0.0, 4.92, 14.77, 6.0, 0.0, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43] #correct
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: error bar mean list (y) and error bar numbers list(x)  change manualy deleting mean 0 and corresponding number at X numbers list
-deadwood_errorbar_mean=[60.714285714285715, 77.0, 28.825000000000003, 159.9, 181.0, 120.97999999999999, 102.66666666666667, 47.25, 65.3, 111.7, 92.0, 32.6, 155.0, 158.0, 135.0, 175.95454545454547, 205.66666666666666, 4.4, 60.675000000000004]
-errorbar_list_1_to_25 = [1, 2, 3, 4, 5, 6,  9, 10.8, 11, 11.2, 12, 13, 15, 16.9, 17.1, 18, 19, 21, 22]
+x_error = [1, 2, 3, 4, 4.9, 5.1, 6, 7, 7.9, 8.1, 8.9, 9.1, 10, 11.8, 12, 12.2, 13, 14, 15, 15.9, 16.1, 17.9, 18.1, 19, 19.9, 20.1, 22] #correct
 #checking the list and the correct number of values in the lists
-print(deadwood_bar_list)
-print(len(deadwood_bar_list))
+print("y_bar")
+print(y_bar)
+print(len(y_bar))
 
-print(barlist_1_to_22)
-print(len(barlist_1_to_22))
+print("x_bar")
+print(x_bar)
+print(len(x_bar))
 
-print(deadwood_errorbar_mean)
-print(len(deadwood_errorbar_mean))
+print("y_error")
+print(y_error)
+print(len(y_error))
 
-print(errorbar_list_1_to_25)
-print(len(errorbar_list_1_to_25))
+print("x_error")
+print(x_error)
+print(len(x_error))
 
+print("yerr_max")
+print(yerr_max)
+print(len(yerr_max))
+
+print("yerr_min")
+print(yerr_min)
+print(len(yerr_min))
+
+print("Country")
 print(Country)
 print(len(Country))
- #CHART
+#  #CHART
 fig, ax = plt.subplots()
-ax.bar(x=barlist_1_to_22, height = deadwood_bar_list, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
-error = [deadwood_errorbar_min, deadwood_errorbar_max]
-ax.errorbar(x=errorbar_list_1_to_25, y=deadwood_errorbar_mean, yerr=error, fmt='d', linewidth=1, capsize=3)
+ax.bar(x=x_bar, height = y_bar, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
+error = [yerr_min, yerr_max]
+ax.errorbar(x=x_error, y=y_error, yerr=error, fmt='d', linewidth=1, capsize=3)
 #plt.text(1,deadwood_errorbar_mean[1],"Text Label",va='top',fontsize=3,rotation=90)
 
 plt.xticks(fontsize=8, rotation=60)
