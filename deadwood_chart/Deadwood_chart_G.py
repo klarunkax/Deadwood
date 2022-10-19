@@ -225,10 +225,10 @@ ax.errorbar(x=x_error, y=y_error, yerr=error, fmt='none', linewidth=1, capsize=3
 scatter = mscatter(x, y, c=c, s=s, m=m, ax=ax, zorder=2)
 
 plt.xticks(fontsize=8, rotation=90)
-fig.suptitle('Deadwood amount EU27', fontsize=10, weight = 'bold')
+#fig.suptitle('Deadwood amount EU27', fontsize=10, weight = 'bold')
 #plt.xlabel('Country', fontsize=5)
 plt.ylabel('Deadwood m3/ha', fontsize=10, weight = 'bold')
-fig.subplots_adjust(bottom = 0.18, top = 0.95)
+fig.subplots_adjust(bottom = 0.18, top = 0.98)
 
 boreal = mlines.Line2D([], [], color='green', marker='h', linestyle='None',
                           markersize=5, label='Boreal')
@@ -242,8 +242,8 @@ mediterranean = mlines.Line2D([], [], color='gold', marker='o', linestyle='None'
                           markersize=5, label='Mediterranean')
 pannonian = mlines.Line2D([], [], color='orange', marker='d', linestyle='None',
                           markersize=5, label='Pannonian')
-blue_patch = mpatches.Patch(facecolor='lightsteelblue',edgecolor = 'black', label='UNECE Deadwood')
+#blue_patch = mpatches.Patch(facecolor='lightsteelblue',edgecolor = 'black', label='UNECE Deadwood')
 
 
-plt.legend(handles=[boreal, atlantic, alpine, continental, mediterranean, pannonian, blue_patch],title='Reference sites bioregions')
+plt.legend(handles=[boreal, atlantic, alpine, continental, mediterranean, pannonian],title='Biogeographical regions')
 plt.show()
