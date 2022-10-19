@@ -2,6 +2,8 @@ import pandas
 import os
 import csv
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import matplotlib as mpl
 import seaborn as sns
 import numpy as np
@@ -17,7 +19,7 @@ UNECE_deadwood.rename_axis('Date').reset_index()
 UNECE_deadwood = pandas.DataFrame(UNECE_deadwood)
 #reame the first column as COUNTRY
 UNECE_deadwood.rename(columns={UNECE_deadwood.columns[0]: "ENG_NAME"}, inplace = True)
-#Choose rrelevant columns
+#Choose relevant columns
 UNECE_deadwood = UNECE_deadwood[['ENG_NAME', 'Forest - 2015 (m?/ha)_Total', 'Forest - 2010 (m?/ha)_Total']]
 
 #load csv with Europe names and limit for the EU27
@@ -69,27 +71,64 @@ table = table.reset_index()
 table = table.drop(['index'], axis=1)
 table = table.fillna(0)
 table['number'] = range(1, 1+len(table))
-print(table)
 table.to_csv('C:/Users/Klara/Documents/Prace/JRC/Teleworking/2022/forest_condition/deadwood/chart/table.csv')
+print(table.to_string())
 
 # #create lists for the charts
 Country = list(table["Country"])
 Country = list(dict.fromkeys(Country)) #removes duplicates, keeps only one from several same values
-Country = list(map(lambda x: x.replace('Czech Republic', 'Czech Rep.'), Country)) #replace: shortening czech rep.
-Country = list(map(lambda x: x.replace('Netherlands', 'Netherl.'), Country)) #replace: shortening czech rep.
-y_error = list(table["mean"])
-y_error  = list(filter(lambda num: num != 0, y_error)) #correct
-yerr_min = list(table["min"])
-yerr_min  = list(filter(lambda num: num != 0, yerr_min)) #correct
-yerr_max = list(table["max"])
-yerr_max  = list(filter(lambda num: num != 0, yerr_max)) #correct
-x_bar= list(range(1, 23)) #correct
-y_bar = list(table["Deadwood"])
-print(y_bar)
+#Country = list(map(lambda x: x.replace('Czech Republic', 'Czech Rep.'), Country)) #replace: shortening czech rep.
+#Country = list(map(lambda x: x.replace('Netherlands', 'Netherl.'), Country)) #replace: shortening czech rep.
+
+# TABLE for mean, min_e, max_e without 0
+table2 = table.drop(table.loc[table['mean']==0].index, inplace=True)
+table2 = table.loc[table['mean']!= 0]
+print(table2)
+# # create error columns
+table2['min_e']= table2["mean"] - table2["min"]
+table2['max_e']= table2["max"] - table2["mean"]
+print(table2)
+# #create error lists for the charts
+y_error = list(table2["mean"])
+#y_error  = list(filter(lambda num: num != 0, y_error)) #correct
+yerr_min = list(table2["min_e"])
+#yerr_min  = list(filter(lambda num: num != 0, yerr_min)) #correct
+yerr_max = list(table2["max_e"])
+#yerr_max  = list(filter(lambda num: num != 0, yerr_max)) #correct
+x_bar= list(range(0, 22)) #correct
+
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: deadwood bar list change manualy deleting the duplicates (except 0)
-y_bar = [21.8, 11.45, 0.0, 0.0, 4.92, 14.77, 6.0, 0.0, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43] #correct
+y_bar = [21.8, 11.45, 0.0, 25.20, 4.92, 14.77, 6.0, 23, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43]
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: error bar mean list (y) and error bar numbers list(x)  change manualy deleting mean 0 and corresponding number at X numbers list
-x_error = [1, 2, 3, 4, 4.9, 5.1, 6, 7, 7.9, 8.1, 8.9, 9.1, 10, 11.8, 12, 12.2, 13, 14, 15, 15.9, 16.1, 17.9, 18.1, 19, 19.9, 20.1, 22] #correct
+x_error = [0,
+1,
+2,
+3,
+3.9,
+4.1,
+5,
+6,
+6.9,
+7.1,
+7.9,
+8.1,
+9,
+10.8,
+11,
+11.2,
+12,
+13,
+14,
+14.9,
+15.1,
+16.9,
+17.1,
+18,
+18.9,
+19.1,
+21
+] #correct
+#x_error = [1, 2, 3, 4, 4.9, 5.1, 6, 7, 7.9, 8.1, 8.9, 9.1, 10, 11.8, 12, 12.2, 13, 14, 15, 15.9, 16.1, 17.9, 18.1, 19, 19.9, 20.1, 22]
 #checking the list and the correct number of values in the lists
 print("y_bar")
 print(y_bar)
@@ -119,15 +158,92 @@ print("Country")
 print(Country)
 print(len(Country))
 #  #CHART
+
+#loop for different markers
+def mscatter(x, y,ax=None, m=None, **kw):
+    import matplotlib.markers as mmarkers
+    if not ax: ax=plt.gca()
+    sc = ax.scatter(x,y,**kw)
+    if (m is not None) and (len(m)==len(x)):
+        paths = []
+        for marker in m:
+            if isinstance(marker, mmarkers.MarkerStyle):
+                marker_obj = marker
+            else:
+                marker_obj = mmarkers.MarkerStyle(marker)
+            path = marker_obj.get_path().transformed(
+                        marker_obj.get_transform())
+            paths.append(path)
+        sc.set_paths(paths)
+    return sc
+x=x_error
+y=y_error
+m = ["D","s","*","*","s","*","h","h","s","o","s","*","d","D","*","o","h","*","s","D","*","D","d","D","D","*","h"]
+c = ["blue","cyan","yellowgreen","yellowgreen","cyan","yellowgreen","green","green","cyan","gold","cyan","yellowgreen","orange","blue","yellowgreen","gold",
+"green","yellowgreen","cyan","blue","yellowgreen","blue","orange","blue","blue","yellowgreen","green"]
+s= [20,
+25,
+60,
+60,
+25,
+60,
+40,
+40,
+25,
+30,
+25,
+60,
+40,
+
+20,
+60,
+30,
+40,
+60,
+25,
+20,
+60,
+
+20,
+40,
+20,
+20,
+60,
+
+40,
+
+
+]
+
 fig, ax = plt.subplots()
-ax.bar(x=x_bar, height = y_bar, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black')
+ax.bar(x=x_bar, height = y_bar, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black', zorder=0)
+ax.margins(x=0)
 error = [yerr_min, yerr_max]
-ax.errorbar(x=x_error, y=y_error, yerr=error, fmt='d', linewidth=1, capsize=3)
+ax.errorbar(x=x_error, y=y_error, yerr=error, fmt='none', linewidth=1, capsize=3, zorder=1)
 #plt.text(1,deadwood_errorbar_mean[1],"Text Label",va='top',fontsize=3,rotation=90)
+#ax.scatter(x=x_error, y=y_error, s=15)
+scatter = mscatter(x, y, c=c, s=s, m=m, ax=ax, zorder=2)
 
-plt.xticks(fontsize=8, rotation=60)
+plt.xticks(fontsize=8, rotation=90)
 fig.suptitle('Deadwood amount EU27', fontsize=10, weight = 'bold')
-plt.xlabel('Country', fontsize=5)
+#plt.xlabel('Country', fontsize=5)
 plt.ylabel('Deadwood m3/ha', fontsize=10, weight = 'bold')
+fig.subplots_adjust(bottom = 0.18, top = 0.95)
 
+boreal = mlines.Line2D([], [], color='green', marker='h', linestyle='None',
+                          markersize=5, label='Boreal')
+atlantic = mlines.Line2D([], [], color='cyan', marker='s', linestyle='None',
+                          markersize=5, label='Atlantic')
+alpine = mlines.Line2D([], [], color='blue', marker='D', linestyle='None',
+                          markersize=5, label='Alpine')
+continental = mlines.Line2D([], [], color='yellowgreen', marker='*', linestyle='None',
+                          markersize=5, label='Continental')
+mediterranean = mlines.Line2D([], [], color='gold', marker='o', linestyle='None',
+                          markersize=5, label='Mediterranean')
+pannonian = mlines.Line2D([], [], color='orange', marker='d', linestyle='None',
+                          markersize=5, label='Pannonian')
+blue_patch = mpatches.Patch(facecolor='lightsteelblue',edgecolor = 'black', label='UNECE Deadwood')
+
+
+plt.legend(handles=[boreal, atlantic, alpine, continental, mediterranean, pannonian, blue_patch],title='Reference sites bioregions')
 plt.show()
