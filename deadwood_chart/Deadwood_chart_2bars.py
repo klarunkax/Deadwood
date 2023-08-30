@@ -46,6 +46,11 @@ print(UNECE_deadwood_EU27.to_string())
 # print(Country)
 # print(UNECE_deadwood)
 
+#ICP DEADWOOD DATA
+ICP_deadwood = pandas.read_csv('ICP_DW.csv')
+ICP_deadwood = pandas.DataFrame(ICP_deadwood)
+ICP_deadwood = ICP_deadwood[['Country', 'ICP']]
+
 ##DEADWOOD DATA FOR REF. SITES
 REFSITES_deadwood = pandas.read_csv('deadwood_v10.csv',encoding= 'unicode_escape')
 REFSITES_deadwood = pandas.DataFrame(REFSITES_deadwood)
@@ -59,7 +64,8 @@ REFSITES_min_max_avg= (REFSITES_deadwood.groupby(['Country','Bioregion'])['Deadw
 #print(REFSITES_min_max_avg)
 
 table = pandas.merge(UNECE_deadwood_EU27, REFSITES_min_max_avg, how='outer', on="Country")
-#print(table)
+table = pandas.merge(table, ICP_deadwood, how='outer', on="Country")
+print(table)
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: drop countries where in both datasets are NA
 table = table.loc[table["Country"] != "Croatia"]
 table = table.loc[table["Country"] != "Cyprus"]
@@ -95,10 +101,43 @@ yerr_min = list(table2["min_e"])
 #yerr_min  = list(filter(lambda num: num != 0, yerr_min)) #correct
 yerr_max = list(table2["max_e"])
 #yerr_max  = list(filter(lambda num: num != 0, yerr_max)) #correct
-x_bar= list(range(0, 22)) #correct
-
+x_bar0=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #list(range(0, 22)) #correct
+x_bar1= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
+x_bar2= [0.4,1.4,2.4,3.4,4.4,5.4,6.4,7.4,8.4,9.4,10.4,11.4,12.4,13.4,14.4,15.4,16.4,17.4,18.4,19.4,20.4,21.4]
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: deadwood bar list change manualy deleting the duplicates (except 0)
-y_bar = [21.8, 11.45, 0.0, 25.20, 4.92, 14.77, 6.0, 23, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43]
+y_bar1 = [21.8, 11.45, 0.0, 25.20, 4.92, 14.77, 6.0, 23, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43]
+y_bar2 = [23.7,
+16.5,
+0,
+4.1,
+
+6.2,
+0,
+4.7,
+
+20.1,
+
+23.8,
+9,
+1.6,
+
+
+12.9,
+25.2,
+15.7,
+0,
+
+7.3,
+0,
+
+0,
+22.5,
+
+29.9,
+
+4.6,
+23.3,
+]
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: error bar mean list (y) and error bar numbers list(x)  change manualy deleting mean 0 and corresponding number at X numbers list
 x_error = [0,
 1,
@@ -132,13 +171,21 @@ x_error = [0,
 ] #correct
 #x_error = [1, 2, 3, 4, 4.9, 5.1, 6, 7, 7.9, 8.1, 8.9, 9.1, 10, 11.8, 12, 12.2, 13, 14, 15, 15.9, 16.1, 17.9, 18.1, 19, 19.9, 20.1, 22]
 #checking the list and the correct number of values in the lists
-print("y_bar")
-print(y_bar)
-print(len(y_bar))
+print("y_bar1")
+print(y_bar1)
+print(len(y_bar1))
 
-print("x_bar")
-print(x_bar)
-print(len(x_bar))
+print("y_bar2")
+print(y_bar2)
+print(len(y_bar2))
+
+print("x_bar1")
+print(x_bar1)
+print(len(x_bar1))
+
+print("x_bar2")
+print(x_bar2)
+print(len(x_bar2))
 
 print("y_error")
 print(y_error)
@@ -220,7 +267,12 @@ s= [20,
 ]
 
 fig, ax = plt.subplots()
-ax.bar(x=x_bar, height = y_bar, width=1, tick_label=Country, color='lightsteelblue', edgecolor = 'black', zorder=0)
+ax.bar(x=x_bar0, height = 0, width=1, tick_label=Country)
+ax.bar(x=x_bar1, height = y_bar1, width=0.4, color='lightsteelblue', edgecolor = 'black', zorder=0)
+ax.bar(x=x_bar2, height = y_bar2, width=0.4, color='grey', edgecolor = 'black', zorder=0)
+
+#ax.set_xticks(x_bar1)
+
 ax.margins(x=0)
 error = [yerr_min, yerr_max]
 ax.errorbar(x=x_error, y=y_error, yerr=error, fmt='none', linewidth=1, capsize=3, zorder=1)
