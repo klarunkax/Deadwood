@@ -9,7 +9,7 @@ import seaborn as sns
 import numpy as np
 
 
-os.chdir('C:/Users/Klara/Documents/prace_temporary')
+os.chdir('C:/Users/Klara/Documents/chart')
 #UNECE DEADWOOD DATA
 #load the csv table a put first 2 rows into a single HEADER
 UNECE_deadwood = pandas.read_csv('UNECE_deadwood.csv',encoding= 'unicode_escape', header=[0,1])
@@ -102,8 +102,8 @@ yerr_min = list(table2["min_e"])
 yerr_max = list(table2["max_e"])
 #yerr_max  = list(filter(lambda num: num != 0, yerr_max)) #correct
 x_bar0=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21] #list(range(0, 22)) #correct
-x_bar1= [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
-x_bar2= [0.4,1.4,2.4,3.4,4.4,5.4,6.4,7.4,8.4,9.4,10.4,11.4,12.4,13.4,14.4,15.4,16.4,17.4,18.4,19.4,20.4,21.4]
+x_bar1= [-0.2,0.8,1.8,2.8,3.8,4.8,5.8,6.8,7.8,8.8,9.8,10.8,11.8,12.8,13.8,14.8,15.8,16.8,17.8,18.8,19.8,20.8]
+x_bar2= [0.2,1.2,2.2,3.2,4.2,5.2,6.2,7.2,8.2,9.2,10.2,11.2,12.2,13.2,14.2,15.2,16.2,17.2,18.2,19.2,20.2,21.2]
 #CHECK EVERY TIME AFTER CHANGING ENTRY DATA: deadwood bar list change manualy deleting the duplicates (except 0)
 y_bar1 = [21.8, 11.45, 0.0, 25.20, 4.92, 14.77, 6.0, 23, 20.6, 9.72, 10.11, 9.23, 23.55, 22.8, 13.2, 6.3, 2.33, 9.2, 28.0, 22.3, 4.76, 8.43]
 y_bar2 = [23.7,
@@ -227,9 +227,9 @@ def mscatter(x, y,ax=None, m=None, **kw):
     return sc
 x=x_error
 y=y_error
-m = ["D","s","*","*","s","*","h","h","s","o","s","*","d","D","*","o","h","*","s","D","*","D","d","D","D","*","d","o","h"]
+m = ["D","s","*","*","s","*","h","h","s","o","s","*","d","D","*","o","h","h","s","D","*","D","d","D","D","*","d","o","h"]
 c = ["blue","cyan","yellowgreen","yellowgreen","cyan","yellowgreen","green","green","cyan","gold","cyan","yellowgreen","orange","blue","yellowgreen","gold",
-"green","yellowgreen","cyan","blue","yellowgreen","blue","orange","blue","blue","yellowgreen","red","gold","green"]
+"green","green","cyan","blue","yellowgreen","blue","orange","blue","blue","yellowgreen","red","gold","green"]
 s= [20,
 25,
 60,
@@ -248,7 +248,7 @@ s= [20,
 60,
 30,
 40,
-60,
+40,
 25,
 20,
 60,
